@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Color tokens ────────────────────────────────────────── */
+:root {
+  /* Dark (default) — values are space-separated RGB */
+  --g-bg:      9 9 6;
+  --g-surface: 17 17 16;
+  --g-card:    26 26 21;
+  --g-border:  45 45 34;
+  --g-accent:  212 255 0;
+  --g-accent2: 184 220 0;
+  --g-success: 0 255 122;
+  --g-danger:  255 45 58;
+  --g-pink:    255 51 102;
+  --g-text:    240 240 230;
+  --g-muted:   136 136 112;
+  --g-dim:     68 68 58;
+}
+
+.light {
+  --g-bg:      247 246 240;
+  --g-surface: 236 235 227;
+  --g-card:    227 226 216;
+  --g-border:  196 194 182;
+  --g-accent:  148 198 0;
+  --g-accent2: 122 164 0;
+  --g-success: 0 152 72;
+  --g-danger:  208 24 40;
+  --g-pink:    192 20 60;
+  --g-text:    10 10 8;
+  --g-muted:   90 88 78;
+  --g-dim:     140 138 126;
+}
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html {
+    background-color: rgb(var(--g-bg));
+    height: 100%;
+    overscroll-behavior: none;
+  }
+
+  body {
+    background-color: rgb(var(--g-bg));
+    background-image:
+      repeating-linear-gradient(-45deg, transparent 0px, transparent 38px, rgba(127,127,127,0.03) 38px, rgba(127,127,127,0.03) 40px),
+      radial-gradient(ellipse at 2% 98%, rgb(var(--g-accent) / 0.04) 0%, transparent 55%),
+      radial-gradient(ellipse at 98% 2%, rgb(var(--g-pink) / 0.04) 0%, transparent 55%);
+    color: rgb(var(--g-text));
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    min-height: 100%;
+    min-height: 100dvh;
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #root { min-height: 100%; min-height: 100dvh; }
+  textarea, input { -webkit-appearance: none; appearance: none; }
+}
+
+@layer components {
+  /* ── Buttons ──────────────────────────────────────────── */
+  .btn {
+    @apply w-full font-display tracking-widest text-sm uppercase
+           rounded-lg px-5 transition-all duration-100
+           disabled:opacity-35 disabled:pointer-events-none
+           focus:outline-none inline-flex items-center justify-center;
+  }
+  .btn-primary {
+    @apply btn bg-g-accent text-black font-bold shadow-hard
+           active:translate-x-1 active:translate-y-1 active:shadow-none;
+  }
+  .btn-secondary {
+    @apply btn bg-transparent text-g-accent border-2 border-g-accent shadow-hard-accent
+           active:translate-x-1 active:translate-y-1 active:shadow-none;
+  }
+  .btn-ghost  { @apply btn text-g-muted hover:text-g-text; }
+  .btn-danger {
+    @apply btn bg-g-danger text-white font-bold shadow-hard
+           active:translate-x-1 active:translate-y-1 active:shadow-none;
+  }
+
+  /* ── Inputs ───────────────────────────────────────────── */
+  .input {
+    @apply w-full bg-g-surface border-2 border-g-border text-g-text
+           rounded-lg px-4 py-3 focus:outline-none focus:border-g-accent
+           transition-colors duration-150;
+  }
+  .input::placeholder { color: rgb(var(--g-muted) / 0.6); }
+
+  /* ── Cards ────────────────────────────────────────────── */
+  .card { @apply bg-g-card border-2 border-g-border rounded-lg; }
+
+  /* ── GM badge ─────────────────────────────────────────── */
+  .badge-gm {
+    @apply text-[10px] font-bold uppercase tracking-widest
+           bg-g-pink/20 text-g-pink border border-g-pink/50
+           px-2.5 py-0.5 rounded-sm;
+  }
+
+  /* ── Answer cards ─────────────────────────────────────── */
+  .answer-card {
+    @apply card px-4 py-4 cursor-pointer border-2 transition-all duration-100
+           active:translate-x-px active:translate-y-px;
+  }
+  .answer-card-idle     { @apply answer-card border-g-border hover:border-g-accent/50; }
+  .answer-card-selected { @apply answer-card border-g-accent bg-g-accent/10 shadow-hard-accent; }
+  .answer-card-correct  { @apply answer-card border-g-success bg-g-success/10 shadow-hard-success cursor-default; }
+  .answer-card-wrong    { @apply answer-card border-g-danger bg-g-danger/10 shadow-hard-danger cursor-default; }
+  .answer-card-neutral  { @apply answer-card border-g-border/60 bg-g-surface cursor-default; }
+  .answer-card-own      { @apply answer-card border-g-border/40 bg-g-surface/50 cursor-not-allowed opacity-50; }
+
+  /* ── Page ─────────────────────────────────────────────── */
+  .page {
+    @apply min-h-screen flex flex-col px-4 pt-6 pb-8 max-w-md mx-auto;
+    min-height: 100dvh;
+  }
+}
+
+@layer utilities {
+  .font-display { font-family: 'Russo One', system-ui, sans-serif; }
+  .text-balance { text-wrap: balance; }
+  .scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .animation-delay-100 { animation-delay: 100ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
+}
