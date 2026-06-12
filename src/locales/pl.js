@@ -58,6 +58,8 @@ export default {
   results_label:'Wyniki · Runda',
   next_round:'▶ Następna Runda', final_round_btn:'★ Runda Finałowa', end_game:'Zakończ Grę',
   waiting_host:'Czekaj na decyzję prowadzącego…',
+  confirm_next:'Rozpocząć następną rundę?', confirm_final:'Przejść do rundy finałowej?', confirm_end:'Zakończyć grę?',
+  confirm_yes:'Potwierdź', confirm_back:'← Wróć',
   ar_correct:'✅ Poprawna odpowiedź', ar_trap:'❌ Pułapka prowadzącego',
   ar_player:'👤 {name}', ar_chosen:'Wybrali: {names}',
   game_over:'Koniec Gry!', total_rounds:'Rozegranych rund: {n}', new_game:'Nowa Gra',

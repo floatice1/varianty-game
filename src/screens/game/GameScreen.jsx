@@ -16,14 +16,14 @@ function EndedScreen({ game, onLeave }) {
   const medals = ['🥇','🥈','🥉'];
 
   return (
-    <div className="page">
-      <div className="flex flex-col gap-6 animate-fade-in">
-        <div className="flex flex-col items-center text-center pt-8 pb-2">
+    <div className="page overflow-hidden" style={{ height: '100dvh' }}>
+      <div className="flex flex-col gap-6 animate-fade-in h-full">
+        <div className="flex flex-col items-center text-center pt-6 pb-2 shrink-0">
           <div className="text-6xl mb-4">🏆</div>
           <h1 className="font-display font-bold text-3xl text-g-text mb-1">{t('game_over')}</h1>
           <p className="text-g-muted text-sm">{t('total_rounds', {n: game.roundNumber})}</p>
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide flex flex-col gap-2">
           {sorted.map(([id, p], i) => (
             <div key={id}
               className={`flex items-center justify-between card px-4 py-4 border-2 transition-all ${
@@ -37,7 +37,7 @@ function EndedScreen({ game, onLeave }) {
             </div>
           ))}
         </div>
-        <button className="btn-primary h-14 mt-4" onClick={onLeave}>{t('new_game')}</button>
+        <button className="btn-primary h-14 shrink-0" onClick={onLeave}>{t('new_game')}</button>
       </div>
     </div>
   );
@@ -50,7 +50,7 @@ export default function GameScreen({ game, session, onLeave }) {
   if (phase === 'setup')     return <SetupPhase {...props} />;
   if (phase === 'answering') return <AnsweringPhase {...props} />;
   if (phase === 'reviewing') return <ReviewingPhase {...props} />;
-  if (phase === 'voting')    return <VotingPhase {...props} />;
+  if (phase === 'voting')    return <VotingPhase key={game.roundNumber} {...props} />;
   if (phase === 'revealing') return <RevealingPhase {...props} />;
   if (phase === 'results')   return <ResultsPhase {...props} />;
   if (phase === 'final')     return <FinalRound {...props} />;

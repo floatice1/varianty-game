@@ -58,6 +58,8 @@ export default {
   results_label:'Результати · Раунд',
   next_round:'▶ Наступний раунд', final_round_btn:'★ Фінальний раунд', end_game:'Завершити гру',
   waiting_host:'Очікуй на рішення ведучого…',
+  confirm_next:'Почати наступний раунд?', confirm_final:'Перейти до фінального раунду?', confirm_end:'Завершити гру?',
+  confirm_yes:'Підтвердити', confirm_back:'← Назад',
   ar_correct:'✅ Правильна відповідь', ar_trap:'❌ Пастка ведучого',
   ar_player:'👤 {name}', ar_chosen:'Обрали: {names}',
   game_over:'Гра завершена!', total_rounds:'Всього раундів: {n}', new_game:'Нова гра',

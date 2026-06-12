@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
-import { saveFinalPlayers, saveFinalPrep, endFinalRound } from '../../gameActions';
-import { arrayFromFirebase } from '../../utils';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { saveFinalPlayers, saveFinalPrep, endFinalRound, backToResults } from '../../gameActions';
+import { arrayFromFirebase, shuffle } from '../../utils';
 import { useT } from '../../i18n';
 
 const TOTAL_Q = 3;
@@ -59,9 +59,9 @@ function AnsweringStep({ t, label, qIdx, accent, timer, opts, setOpts, onAdvance
   const hasDup = dups.some(Boolean);
 
   return (
-    <div className="page">
-      <div className="flex flex-col gap-4 animate-fade-in">
-        <div className="flex items-center justify-between pt-2">
+    <div className="page overflow-hidden" style={{ height: '100dvh' }}>
+      <div className="flex flex-col gap-5 animate-fade-in h-full">
+        <div className="flex items-center justify-between pt-2 pb-4 shrink-0 border-b-2 border-g-border">
           <div>
             <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('fin_q_label',{name:label})}</p>
             <p className="font-display text-3xl text-g-text">{qIdx+1} / {TOTAL_Q}</p>
@@ -69,47 +69,50 @@ function AnsweringStep({ t, label, qIdx, accent, timer, opts, setOpts, onAdvance
           <Countdown start={timer} />
         </div>
 
-        {questionText && (
-          <div className={`card px-4 py-3 border-2 ${accent}`}>
-            <p className="text-g-muted text-xs font-display tracking-wider uppercase mb-1">{t('question_label')}</p>
-            <p className="text-g-text text-base font-medium leading-relaxed">{questionText}</p>
-          </div>
-        )}
-        {correctAns && (
-          <div className="card px-3 py-2.5 border-2 border-g-success/50 bg-g-success/5">
-            <p className="text-g-success text-xs font-display tracking-wider uppercase mb-0.5">{t('fin_correct_ref')}</p>
-            <p className="text-g-text text-sm font-medium">{correctAns}</p>
-          </div>
-        )}
-        {!questionText && (
-          <div className={`card px-4 py-3 border-2 ${accent}`}>
-            <p className="text-g-muted text-xs font-display tracking-wider uppercase">{t('plan_q_n',{n:qIdx+1})}</p>
-            <p className="text-g-dim text-xs mt-0.5">{t('fin_q_hint')}</p>
-          </div>
-        )}
-
-        <div className="flex flex-col gap-2">
-          {[0,1,2].map(i => (
-            <div key={i}>
-              <input
-                className={`input ${dups[i] ? 'border-g-danger' : ''}`}
-                placeholder={`${i+1}. …`}
-                value={opts[qIdx][i]}
-                onChange={e => updateOpt(i, e.target.value)}
-                maxLength={200}
-              />
-              {dups[i] && (
-                <p className="text-g-danger text-xs mt-1 font-display tracking-wider uppercase">
-                  {t('fin_dup_error')}
-                </p>
-              )}
+        <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide flex flex-col gap-4">
+          {questionText && (
+            <div className={`card px-4 py-3 border-2 ${accent}`}>
+              <p className="text-g-muted text-xs font-display tracking-wider uppercase mb-1">{t('question_label')}</p>
+              <p className="text-g-text text-base font-medium leading-relaxed">{questionText}</p>
             </div>
-          ))}
+          )}
+          {correctAns && (
+            <div className="card px-3 py-2.5 border-2 border-g-success/50 bg-g-success/5">
+              <p className="text-g-success text-xs font-display tracking-wider uppercase mb-0.5">{t('fin_correct_ref')}</p>
+              <p className="text-g-text text-sm font-medium">{correctAns}</p>
+            </div>
+          )}
+          {!questionText && (
+            <div className={`card px-4 py-3 border-2 ${accent}`}>
+              <p className="text-g-muted text-xs font-display tracking-wider uppercase">{t('plan_q_n',{n:qIdx+1})}</p>
+              <p className="text-g-dim text-xs mt-0.5">{t('fin_q_hint')}</p>
+            </div>
+          )}
+          <div className="flex flex-col gap-2">
+            {[0,1,2].map(i => (
+              <div key={i}>
+                <input
+                  className={`input ${dups[i] ? 'border-g-danger' : ''}`}
+                  placeholder={`${i+1}. …`}
+                  value={opts[qIdx][i]}
+                  onChange={e => updateOpt(i, e.target.value)}
+                  maxLength={200}
+                />
+                {dups[i] && (
+                  <p className="text-g-danger text-xs mt-1 font-display tracking-wider uppercase">
+                    {t('fin_dup_error')}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
-        <button className="btn-primary h-14" onClick={onAdvance} disabled={hasDup}>
-          {advanceLabel}
-        </button>
+        <div className="flex flex-col gap-3 shrink-0 border-t-2 border-g-border pt-4">
+          <button className="btn-primary h-14" onClick={onAdvance} disabled={hasDup}>
+            {advanceLabel}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -117,7 +120,8 @@ function AnsweringStep({ t, label, qIdx, accent, timer, opts, setOpts, onAdvance
 
 // ─── GuessingStep — GM records which option player said ───
 function GuessingStep({ t, label, qIdx, correctAns, questionText, playerOpts, guesses, scores, setGuesses, setScores, onAdvance, advanceLabel }) {
-  const allOpts = [...playerOpts, correctAns];
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const allOpts = useMemo(() => shuffle([...playerOpts, correctAns]), [qIdx]);
   const chosen  = guesses[qIdx];
 
   function pick(i) {
@@ -128,19 +132,20 @@ function GuessingStep({ t, label, qIdx, correctAns, questionText, playerOpts, gu
   }
 
   return (
-    <div className="page">
-      <div className="flex flex-col gap-4 animate-fade-in">
-        <div className="pt-2">
+    <div className="page overflow-hidden" style={{ height: '100dvh' }}>
+      <div className="flex flex-col gap-5 animate-fade-in h-full">
+        <div className="pt-2 pb-4 shrink-0 border-b-2 border-g-border">
           <p className="text-g-muted text-xs font-display tracking-widest uppercase">{label} · {t('plan_q_n',{n:qIdx+1})}</p>
           <p className="font-display text-3xl text-g-text">{qIdx+1} / {TOTAL_Q}</p>
         </div>
-        {questionText && (
-          <div className="card px-4 py-3 border-2 border-g-border">
-            <p className="text-g-text text-base font-medium leading-relaxed">{questionText}</p>
-          </div>
-        )}
-        <div className="flex flex-col gap-2">
-          <p className="text-g-muted text-xs font-display tracking-widest uppercase">
+
+        <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide flex flex-col gap-2">
+          {questionText && (
+            <div className="card px-4 py-3 border-2 border-g-border mb-2">
+              <p className="text-g-text text-base font-medium leading-relaxed">{questionText}</p>
+            </div>
+          )}
+          <p className="text-g-muted text-xs font-display tracking-widest uppercase shrink-0">
             {t('fin_which',{name:label.split(' ')[0]})}
           </p>
           {allOpts.map((opt,i) => {
@@ -162,8 +167,11 @@ function GuessingStep({ t, label, qIdx, correctAns, questionText, playerOpts, gu
             );
           })}
         </div>
-        {chosen!==null && (
-          <button className="btn-primary h-14 mt-1" onClick={onAdvance}>{advanceLabel}</button>
+
+        {chosen !== null && (
+          <div className="flex flex-col gap-3 shrink-0 border-t-2 border-g-border pt-4">
+            <button className="btn-primary h-14" onClick={onAdvance}>{advanceLabel}</button>
+          </div>
         )}
       </div>
     </div>
@@ -345,14 +353,17 @@ export default function FinalRound({ game, session }) {
         </div>
 
         {/* Sticky footer */}
-        <div className="shrink-0 px-4 py-4 border-t-2 border-g-border bg-g-bg">
+        <div className="shrink-0 px-4 py-4 border-t-2 border-g-border bg-g-bg flex flex-col gap-3">
           {showErrors && !allAnswersFilled && (
-            <p className="text-g-danger text-xs font-display tracking-wider uppercase text-center mb-3">
+            <p className="text-g-danger text-xs font-display tracking-wider uppercase text-center">
               {t('fin_fill_answers')}
             </p>
           )}
           <button className="btn-primary h-14 w-full" onClick={handleConfirmSetup}>
             {t('fin_confirm_setup')}
+          </button>
+          <button className="btn-ghost h-11 w-full" onClick={() => backToResults(session.gameCode)}>
+            {t('confirm_back')}
           </button>
         </div>
 

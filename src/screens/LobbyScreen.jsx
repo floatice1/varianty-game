@@ -18,78 +18,87 @@ export default function LobbyScreen({ game, session, onLeave }) {
 
   async function copyCode() {
     try {
-      await navigator.clipboard.writeText(session.gameCode);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(session.gameCode);
+      } else {
+        const el = document.createElement('textarea');
+        el.value = session.gameCode;
+        el.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+        document.body.appendChild(el);
+        el.focus();
+        el.setSelectionRange(0, 99999);
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {}
   }
 
   return (
-    <div className="page">
-      {/* Code — clickable to copy */}
-      <div className="flex flex-col items-center py-8 animate-fade-in">
-        <p className="text-g-dim text-xs font-display tracking-widest uppercase mb-3">{t('code_title')}</p>
-        <button onClick={copyCode} className="flex gap-2 mb-2 active:scale-95 transition-transform">
-          {session.gameCode.split('').map((ch, i) => (
-            <div key={i} className={`w-10 h-12 flex items-center justify-center rounded-xl bg-g-card border-2 transition-colors ${copied ? 'border-g-success' : 'border-g-accent/30 shadow-glow-sm'}`}>
-              <span className={`font-display font-bold text-xl ${copied ? 'text-g-success' : 'text-g-accent'}`}>{ch}</span>
-            </div>
-          ))}
-        </button>
-        <p className="text-g-dim text-xs h-4">
-          {copied ? t('code_copied') : t('share_code')}
-        </p>
-      </div>
-
-      {/* Players only (no GM) */}
-      <div className="flex-1">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('players_label')}</p>
-          <p className="text-g-dim text-xs">{players.length} / 8</p>
-        </div>
-        <div className="flex flex-col gap-2">
-          {players.map(([id, p]) => (
-            <div key={id}
-              className={`card flex items-center justify-between px-4 py-3 animate-slide-up ${id === session.playerId ? 'border-g-accent/30' : ''}`}>
-              <div className="flex items-center gap-3">
-                <div className={`w-2 h-2 rounded-full ${id === session.playerId ? 'bg-g-accent' : 'bg-g-dim'}`} />
-                <span className="text-g-text font-medium">{p.name}</span>
-                {id === session.playerId && <span className="text-g-dim text-xs">{t('you')}</span>}
+    <div className="page overflow-hidden" style={{ height: '100dvh' }}>
+      <div className="flex flex-col gap-5 animate-fade-in h-full">
+        {/* Code — clickable to copy */}
+        <div className="flex flex-col items-center py-4 shrink-0">
+          <p className="text-g-dim text-xs font-display tracking-widest uppercase mb-3">{t('code_title')}</p>
+          <button onClick={copyCode} className="flex gap-2 mb-2 active:scale-95 transition-transform">
+            {session.gameCode.split('').map((ch, i) => (
+              <div key={i} className={`w-10 h-12 flex items-center justify-center rounded-xl bg-g-card border-2 transition-colors ${copied ? 'border-g-success' : 'border-g-accent/30 shadow-glow-sm'}`}>
+                <span className={`font-display font-bold text-xl ${copied ? 'text-g-success' : 'text-g-accent'}`}>{ch}</span>
               </div>
-            </div>
-          ))}
-          {players.length === 0 && (
-            <div className="card px-4 py-3 border-dashed flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-g-dim animate-ping-slow" />
-              <span className="text-g-dim text-sm">{t('waiting_players')}</span>
-            </div>
+            ))}
+          </button>
+          <p className="text-g-dim text-xs h-4">
+            {copied ? t('code_copied') : t('share_code')}
+          </p>
+        </div>
+
+        {/* Players only (no GM) — scrollable if list is long */}
+        <div className="flex flex-col gap-2 flex-1 min-h-0">
+          <div className="flex items-center justify-between shrink-0">
+            <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('players_label')}</p>
+            <p className="text-g-dim text-xs">{players.length} / 8</p>
+          </div>
+          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide flex flex-col gap-2">
+            {players.map(([id, p]) => (
+              <div key={id}
+                className={`card flex items-center justify-between px-4 py-3 animate-slide-up ${id === session.playerId ? 'border-g-accent/30' : ''}`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-2 h-2 rounded-full ${id === session.playerId ? 'bg-g-accent' : 'bg-g-dim'}`} />
+                  <span className="text-g-text font-medium">{p.name}</span>
+                  {id === session.playerId && <span className="text-g-dim text-xs">{t('you')}</span>}
+                </div>
+              </div>
+            ))}
+            {players.length === 0 && (
+              <div className="card px-4 py-3 border-dashed flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-g-dim animate-ping-slow" />
+                <span className="text-g-dim text-sm">{t('waiting_players')}</span>
+              </div>
+            )}
+          </div>
+          {!canStart && players.length > 0 && (
+            <p className="text-center text-g-dim text-xs shrink-0">{t('min_players')}</p>
           )}
         </div>
-        {!canStart && players.length > 0 && (
-          <p className="text-center text-g-dim text-xs mt-4">{t('min_players')}</p>
-        )}
-      </div>
 
-      {isGM && (
-        <div className="mt-6">
-          <PlanningPanel existingPresets={presets} existingFinalPrep={finalPrep} gameCode={session.gameCode} />
-        </div>
-      )}
-
-      <div className="flex flex-col gap-3 mt-4">
-        {isGM ? (
-          <button className="btn-primary py-4 text-base" onClick={() => startGame(session.gameCode)} disabled={!canStart}>
-            {t('start_game')}
-          </button>
-        ) : (
-          <div className="card px-4 py-4 text-center">
-            <div className="flex items-center justify-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-g-accent animate-ping-slow" />
-              <span className="text-g-muted text-sm">{t('waiting_gm')}</span>
+        {/* Bottom — fixed: planning panel (GM) + action buttons */}
+        <div className="flex flex-col gap-3 shrink-0">
+          {isGM && <PlanningPanel existingPresets={presets} existingFinalPrep={finalPrep} gameCode={session.gameCode} />}
+          {isGM ? (
+            <button className="btn-primary py-4 text-base" onClick={() => startGame(session.gameCode)} disabled={!canStart}>
+              {t('start_game')}
+            </button>
+          ) : (
+            <div className="card px-4 py-4 text-center">
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-g-accent animate-ping-slow" />
+                <span className="text-g-muted text-sm">{t('waiting_gm')}</span>
+              </div>
             </div>
-          </div>
-        )}
-        <button className="btn-ghost py-3 text-sm" onClick={onLeave}>{t('leave_game')}</button>
+          )}
+          <button className="btn-ghost py-3 text-sm" onClick={onLeave}>{t('leave_game')}</button>
+        </div>
       </div>
     </div>
   );

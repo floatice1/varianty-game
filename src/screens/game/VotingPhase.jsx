@@ -4,6 +4,12 @@ import { arrayFromFirebase } from '../../utils';
 import { useT } from '../../i18n';
 import Timer from '../../components/Timer';
 
+function getVoteId(voteData, roundNumber) {
+  if (!voteData) return null;
+  if (typeof voteData === 'object') return voteData.r === roundNumber ? voteData.o : null;
+  return voteData || null;
+}
+
 export default function VotingPhase({ game, session }) {
   const t = useT();
   const round   = game.round   || {};
@@ -11,9 +17,9 @@ export default function VotingPhase({ game, session }) {
   const options = arrayFromFirebase(round.options);
   const votes   = round.votes  || {};
 
-  const myVote       = votes[session.playerId];
+  const myVote       = getVoteId(votes[session.playerId], game.roundNumber);
   const nonGMPlayers = Object.entries(players).filter(([, p]) => !p.isGM);
-  const votedCount   = nonGMPlayers.filter(([id]) => !!votes[id]).length;
+  const votedCount   = nonGMPlayers.filter(([id]) => !!getVoteId(votes[id], game.roundNumber)).length;
 
   const voteDeadline = (round.voteTimerStart || 0) + 20 * 1000;
   const [expired, setExpired] = useState(() => Date.now() >= voteDeadline);
@@ -26,7 +32,7 @@ export default function VotingPhase({ game, session }) {
   async function handleVote(optionId) {
     if (expired || optionId === session.playerId) return;
     if (myVote === optionId) await removeVote(session.gameCode, session.playerId);
-    else await submitVote(session.gameCode, session.playerId, optionId);
+    else await submitVote(session.gameCode, session.playerId, optionId, game.roundNumber);
   }
 
   // ── GM ───────────────────────────────────────────────────
@@ -54,9 +60,9 @@ export default function VotingPhase({ game, session }) {
             </div>
             <div className="flex flex-col gap-1.5">
               {nonGMPlayers.map(([id, p]) => (
-                <div key={id} className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${votes[id] ? 'bg-g-accent/10' : 'bg-g-surface'}`}>
+                <div key={id} className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${getVoteId(votes[id], game.roundNumber) ? 'bg-g-accent/10' : 'bg-g-surface'}`}>
                   <span className="text-g-text text-sm">{p.name}</span>
-                  {votes[id] ? <span className="text-g-accent font-bold">✓</span> : <span className="text-g-dim text-xs">{t('voting_dot')}</span>}
+                  {getVoteId(votes[id], game.roundNumber) ? <span className="text-g-accent font-bold">✓</span> : <span className="text-g-dim text-xs">{t('voting_dot')}</span>}
                 </div>
               ))}
             </div>
@@ -88,7 +94,7 @@ export default function VotingPhase({ game, session }) {
         <div className="flex flex-col gap-3">
           {options.map(option => {
             const isOwn      = option.id === session.playerId;
-            const isSelected = myVote === option.id;
+            const isSelected = myVote !== null && myVote === option.id;
             const blocked    = expired || isOwn;
             let cardClass = isOwn ? 'answer-card-own' : isSelected ? 'answer-card-selected' : 'answer-card-idle';
             return (

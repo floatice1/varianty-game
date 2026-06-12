@@ -106,7 +106,7 @@
     @apply card px-4 py-4 cursor-pointer border-2 transition-all duration-100
            active:translate-x-px active:translate-y-px;
   }
-  .answer-card-idle     { @apply answer-card border-g-border hover:border-g-accent/50; }
+  .answer-card-idle     { @apply answer-card border-g-border; }
   .answer-card-selected { @apply answer-card border-g-accent bg-g-accent/10 shadow-hard-accent; }
   .answer-card-correct  { @apply answer-card border-g-success bg-g-success/10 shadow-hard-success cursor-default; }
   .answer-card-wrong    { @apply answer-card border-g-danger bg-g-danger/10 shadow-hard-danger cursor-default; }
@@ -118,6 +118,10 @@
     @apply min-h-screen flex flex-col px-4 pt-6 pb-8 max-w-md mx-auto;
     min-height: 100dvh;
   }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .answer-card-idle:hover { border-color: rgb(var(--g-accent) / 0.5); }
 }
 
 @layer utilities {

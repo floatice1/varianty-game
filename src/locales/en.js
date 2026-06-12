@@ -69,6 +69,8 @@ export default {
   results_label:'Results · Round',
   next_round:'▶ Next Round', final_round_btn:'★ Final Round', end_game:'End Game',
   waiting_host:"Waiting for host's decision…",
+  confirm_next:'Start next round?', confirm_final:'Go to the final round?', confirm_end:'End the game?',
+  confirm_yes:'Confirm', confirm_back:'← Back',
   // answer reveal
   ar_correct:'✅ Correct Answer', ar_trap:"❌ Host's Trap",
   ar_player:'👤 {name}', ar_chosen:'Chosen by: {names}',

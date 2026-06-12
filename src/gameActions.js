@@ -20,9 +20,6 @@ export async function createGame(gmName) {
     },
   });
 
-  // Auto-destroy the room if GM disconnects unexpectedly
-  onDisconnect(ref(db, `games/${gameCode}`)).remove();
-
   return { gameCode, playerId };
 }
 
@@ -43,7 +40,7 @@ export async function joinGame(gameCode, playerName) {
   const game = snap.val();
   if (game.phase !== 'lobby') throw new Error('err_started');
 
-  const playerCount = Object.keys(game.players || {}).length;
+  const playerCount = Object.values(game.players || {}).filter(p => !p.isGM).length;
   if (playerCount >= 8) throw new Error('err_full');
 
   // Check for duplicate name (case-insensitive, non-GM players)
@@ -69,21 +66,18 @@ export async function startGame(gameCode) {
 }
 
 export async function startRound(gameCode, roundNumber, correctAnswer, wrongAnswer, timerDuration) {
-  // Set round data first, then flip phase atomically
   const updates = {
     phase: 'answering',
     roundNumber: roundNumber + 1,
-    round: {
-      timerDuration,
-      answerTimerStart: Date.now(),
-      voteTimerStart: null,
-      correctAnswer: correctAnswer.trim(),
-      wrongAnswer: wrongAnswer.trim(),
-      answers: null,
-      options: null,
-      votes: null,
-      scoreChanges: null,
-    },
+    'round/timerDuration':    timerDuration,
+    'round/answerTimerStart': Date.now(),
+    'round/voteTimerStart':   null,
+    'round/correctAnswer':    correctAnswer.trim(),
+    'round/wrongAnswer':      wrongAnswer.trim(),
+    'round/answers':          null,
+    'round/options':          null,
+    'round/votes':            null,
+    'round/scoreChanges':     null,
   };
   await update(ref(db, `games/${gameCode}`), updates);
 }
@@ -102,6 +96,7 @@ export async function startVoting(gameCode) {
   await update(ref(db, `games/${gameCode}`), {
     phase: 'voting',
     'round/voteTimerStart': Date.now(),
+    'round/votes': null,
   });
 }
 
@@ -114,7 +109,12 @@ export async function finalizeResults(gameCode, players, votes) {
     .filter(([, p]) => !p.isGM)
     .map(([id]) => id);
 
-  const changes = computeScoreChanges(votes || {}, nonGMIds);
+  // Normalize votes: extract optionId from { o, r } objects (or pass through legacy strings)
+  const flatVotes = {};
+  Object.entries(votes || {}).forEach(([pid, v]) => {
+    flatVotes[pid] = (v && typeof v === 'object') ? v.o : v;
+  });
+  const changes = computeScoreChanges(flatVotes, nonGMIds);
 
   const updates = {
     phase: 'revealing',       // GM sees results first; players wait
@@ -136,6 +136,10 @@ export async function nextRound(gameCode) {
   await update(ref(db, `games/${gameCode}`), { phase: 'setup' });
 }
 
+export async function backToResults(gameCode) {
+  await update(ref(db, `games/${gameCode}`), { phase: 'results' });
+}
+
 export async function endGame(gameCode) {
   await update(ref(db, `games/${gameCode}`), { phase: 'ended' });
 }
@@ -148,8 +152,8 @@ export async function submitAnswer(gameCode, playerId, answer) {
   await set(ref(db, `games/${gameCode}/round/answers/${playerId}`), answer.trim());
 }
 
-export async function submitVote(gameCode, playerId, optionId) {
-  await set(ref(db, `games/${gameCode}/round/votes/${playerId}`), optionId);
+export async function submitVote(gameCode, playerId, optionId, roundNumber) {
+  await set(ref(db, `games/${gameCode}/round/votes/${playerId}`), { o: optionId, r: roundNumber });
 }
 
 export async function removeVote(gameCode, playerId) {

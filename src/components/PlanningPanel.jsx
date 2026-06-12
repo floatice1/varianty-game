@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { savePresetRounds, saveFinalPrep } from '../gameActions';
 import { useT } from '../i18n';
 
@@ -71,7 +71,15 @@ export default function PlanningPanel({ existingPresets, existingFinalPrep, game
   const hasFinal   = !!(existingFinalPrep?.questionsA?.length);
   const initCount  = Math.max(hasPresets ? existingPresets.length : 5, 1);
 
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(() => {
+    try { return localStorage.getItem(`plan_expanded_${gameCode}`) === 'true'; }
+    catch { return false; }
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem(`plan_expanded_${gameCode}`, String(expanded)); }
+    catch {}
+  }, [expanded, gameCode]);
   const [tab,      setTab]      = useState('rounds');
   const [saving,   setSaving]   = useState(false);
 
@@ -96,6 +104,30 @@ export default function PlanningPanel({ existingPresets, existingFinalPrep, game
     }))
   );
 
+  const entriesInitRef = useRef(false);
+  const finalInitRef   = useRef(false);
+
+  useEffect(() => {
+    if (!entriesInitRef.current) { entriesInitRef.current = true; return; }
+    const id = setTimeout(() => {
+      savePresetRounds(gameCode, entries.map(e => ({
+        question: e.question.trim(), correctAnswer: e.correct.trim(), wrongAnswer: e.wrong.trim(),
+      }))).catch(() => {});
+    }, 800);
+    return () => clearTimeout(id);
+  }, [entries, gameCode]);
+
+  useEffect(() => {
+    if (!finalInitRef.current) { finalInitRef.current = true; return; }
+    const id = setTimeout(() => {
+      saveFinalPrep(gameCode, {
+        questionsA: qA.map(q => ({ q: q.q.trim(), a: q.a.trim() })),
+        questionsB: qB.map(q => ({ q: q.q.trim(), a: q.a.trim() })),
+      }).catch(() => {});
+    }, 800);
+    return () => clearTimeout(id);
+  }, [qA, qB, gameCode]);
+
   function changeCount(n) {
     const c = Math.max(1, Math.min(15, n));
     setCountVal(c);
@@ -112,16 +144,15 @@ export default function PlanningPanel({ existingPresets, existingFinalPrep, game
   async function handleSave() {
     setSaving(true);
     try {
-      if (tab === 'rounds') {
-        await savePresetRounds(gameCode, entries.map(e => ({
-          question: e.question.trim(), correctAnswer: e.correct.trim(), wrongAnswer: e.wrong.trim()
-        })));
-      } else {
-        await saveFinalPrep(gameCode, {
+      await Promise.all([
+        savePresetRounds(gameCode, entries.map(e => ({
+          question: e.question.trim(), correctAnswer: e.correct.trim(), wrongAnswer: e.wrong.trim(),
+        }))),
+        saveFinalPrep(gameCode, {
           questionsA: qA.map(q => ({ q: q.q.trim(), a: q.a.trim() })),
           questionsB: qB.map(q => ({ q: q.q.trim(), a: q.a.trim() })),
-        });
-      }
+        }),
+      ]);
       setExpanded(false);
     } finally { setSaving(false); }
   }
