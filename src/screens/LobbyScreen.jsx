@@ -39,16 +39,16 @@ export default function LobbyScreen({ game, session, onLeave }) {
     <div className="page overflow-hidden" style={{ height: '100dvh' }}>
       <div className="flex flex-col gap-5 animate-fade-in h-full">
         {/* Code — clickable to copy */}
-        <div className="flex flex-col items-center py-4 shrink-0">
-          <p className="text-g-dim text-xs font-display tracking-widest uppercase mb-3">{t('code_title')}</p>
-          <button onClick={copyCode} className="flex gap-2 mb-2 active:scale-95 transition-transform">
+        <div className="flex flex-col items-center py-5 shrink-0">
+          <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase mb-4">{t('code_title')}</p>
+          <button onClick={copyCode} className="flex gap-1.5 mb-3 active:scale-95 transition-transform">
             {session.gameCode.split('').map((ch, i) => (
-              <div key={i} className={`w-10 h-12 flex items-center justify-center rounded-xl bg-g-card border-2 transition-colors ${copied ? 'border-g-success' : 'border-g-accent/30 shadow-glow-sm'}`}>
-                <span className={`font-display font-bold text-xl ${copied ? 'text-g-success' : 'text-g-accent'}`}>{ch}</span>
+              <div key={i} className={`w-12 h-16 flex items-center justify-center rounded-lg bg-g-surface border-2 transition-colors ${copied ? 'border-g-success shadow-glow-success' : 'border-g-accent shadow-glow'}`}>
+                <span className={`font-display text-4xl leading-none ${copied ? 'text-g-success' : 'text-g-accent'}`}>{ch}</span>
               </div>
             ))}
           </button>
-          <p className="text-g-dim text-xs h-4">
+          <p className={`text-xs font-graffiti tracking-wider uppercase h-4 transition-colors ${copied ? 'text-g-success' : 'text-g-muted'}`}>
             {copied ? t('code_copied') : t('share_code')}
           </p>
         </div>
@@ -56,7 +56,7 @@ export default function LobbyScreen({ game, session, onLeave }) {
         {/* Players only (no GM) — scrollable if list is long */}
         <div className="flex flex-col gap-2 flex-1 min-h-0">
           <div className="flex items-center justify-between shrink-0">
-            <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('players_label')}</p>
+            <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('players_label')}</p>
             <p className="text-g-dim text-xs">{players.length} / 8</p>
           </div>
           <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide flex flex-col gap-2">
@@ -65,8 +65,8 @@ export default function LobbyScreen({ game, session, onLeave }) {
                 className={`card flex items-center justify-between px-4 py-3 animate-slide-up ${id === session.playerId ? 'border-g-accent/30' : ''}`}>
                 <div className="flex items-center gap-3">
                   <div className={`w-2 h-2 rounded-full ${id === session.playerId ? 'bg-g-accent' : 'bg-g-dim'}`} />
-                  <span className="text-g-text font-medium">{p.name}</span>
-                  {id === session.playerId && <span className="text-g-dim text-xs">{t('you')}</span>}
+                  <span className="text-g-text font-graffiti text-base">{p.name}</span>
+                  {id === session.playerId && <span className="text-g-dim text-xs font-graffiti tracking-wider uppercase">{t('you')}</span>}
                 </div>
               </div>
             ))}

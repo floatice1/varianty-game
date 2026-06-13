@@ -38,7 +38,15 @@ export async function joinGame(gameCode, playerName) {
   if (!snap.exists()) throw new Error('err_not_found');
 
   const game = snap.val();
-  if (game.phase !== 'lobby') throw new Error('err_started');
+  const normalizedName = playerName.trim().toLowerCase();
+
+  // Rejoin: if the game is already running and the player's name is in the list — reconnect
+  if (game.phase !== 'lobby') {
+    const existing = Object.entries(game.players || {})
+      .find(([, p]) => !p.isGM && p.name.trim().toLowerCase() === normalizedName);
+    if (existing) return { playerId: existing[0] };
+    throw new Error('err_started');
+  }
 
   const playerCount = Object.values(game.players || {}).filter(p => !p.isGM).length;
   if (playerCount >= 8) throw new Error('err_full');
@@ -46,7 +54,7 @@ export async function joinGame(gameCode, playerName) {
   // Check for duplicate name (case-insensitive, non-GM players)
   const nameTaken = Object.values(game.players || {})
     .filter(p => !p.isGM)
-    .some(p => p.name.trim().toLowerCase() === playerName.trim().toLowerCase());
+    .some(p => p.name.trim().toLowerCase() === normalizedName);
   if (nameTaken) throw Object.assign(new Error('err_name_taken'), { name: playerName.trim() });
 
   const playerId = generatePlayerId();
@@ -178,11 +186,18 @@ export async function saveFinalPrep(gameCode, prep) {
 // ─────────────────────────────────────────────────────────
 
 export async function startFinalRound(gameCode) {
-  await update(ref(db, `games/${gameCode}`), { phase: 'final' });
+  await update(ref(db, `games/${gameCode}`), {
+    phase: 'final',
+    finalRound: null,   // clear any previous final-round state so setup starts fresh
+  });
 }
 
 export async function saveFinalPlayers(gameCode, player1Id, player2Id) {
   await update(ref(db, `games/${gameCode}/finalRound`), { player1Id, player2Id });
+}
+
+export async function saveFinalRoundQuestions(gameCode, questionsA, questionsB) {
+  await update(ref(db, `games/${gameCode}/finalRound`), { questionsA, questionsB });
 }
 
 export async function endFinalRound(gameCode, scoreUpdates) {

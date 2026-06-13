@@ -12,10 +12,10 @@ export default function ReviewingPhase({ game, session }) {
       <div className="flex flex-col gap-5 animate-fade-in h-full">
         <div className="flex items-center justify-between pt-2 shrink-0">
           <div>
-            <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('options_label')}</p>
+            <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('options_label')}</p>
             <p className="font-display text-2xl text-g-text">{game.roundNumber}</p>
           </div>
-          <span className="text-g-dim text-sm tabular-nums font-display">
+          <span className="text-g-dim text-sm tabular-nums font-graffiti">
             {t('options_count', {n: options.length})}
           </span>
         </div>
@@ -26,9 +26,9 @@ export default function ReviewingPhase({ game, session }) {
 
         <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide flex flex-col gap-3">
           {options.map((option, i) => (
-            <div key={option.id} className="card px-4 py-4 border-2 border-g-border">
+            <div key={option.id} className="card px-4 py-4">
               <div className="flex gap-3 items-start">
-                <span className="font-display font-bold text-g-dim text-sm mt-0.5 shrink-0 w-5">
+                <span className="font-graffiti font-bold text-g-dim text-sm mt-0.5 shrink-0 w-5">
                   {t('option_n', {n: i+1})}
                 </span>
                 <p className="text-g-text text-base leading-relaxed">{option.text}</p>

@@ -18,20 +18,17 @@ export default function Timer({ startedAt, duration, size = 'md' }) {
   const isDone = timeLeft === 0;
   const isLow = timeLeft > 0 && timeLeft <= 5;
 
-  const circumference = 2 * Math.PI * 18; // radius = 18
-  const strokeDash = circumference * pct;
-
   const color = isDone
-    ? '#252d4a'
+    ? 'rgb(var(--g-dim))'
     : isLow
-    ? '#f87171'
-    : '#6e5de5';
+    ? 'rgb(var(--g-danger))'
+    : 'rgb(var(--g-accent))';
 
   const textColor = isDone
-    ? 'text-[#4a5268]'
+    ? 'text-g-dim'
     : isLow
     ? 'text-g-danger'
-    : 'text-white';
+    : 'text-g-text';
 
   const sizes = {
     sm: { svg: 48, r: 18, stroke: 3, text: 'text-sm' },
@@ -53,7 +50,7 @@ export default function Timer({ startedAt, duration, size = 'md' }) {
           cy={cyVal}
           r={s.r}
           fill="none"
-          stroke="#252d4a"
+          stroke="rgb(var(--g-border))"
           strokeWidth={s.stroke}
         />
         {/* Progress */}

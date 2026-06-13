@@ -37,14 +37,14 @@ export default function AnsweringPhase({ game, session }) {
         <div className="flex flex-col gap-5 animate-fade-in">
           <div className="flex items-center justify-between pt-2">
             <div>
-              <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('round_label')}</p>
+              <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('round_label')}</p>
               <p className="font-display text-2xl text-g-text">{game.roundNumber}</p>
             </div>
             <Timer startedAt={round.answerTimerStart} duration={round.timerDuration ?? 30} size="lg" />
           </div>
           <div className="card px-4 py-4">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-g-text font-semibold">{t('responses_label')}</p>
+              <p className="text-g-text font-graffiti">{t('responses_label')}</p>
               <p className="font-display font-bold text-g-accent text-xl tabular-nums">
                 {submittedCount}<span className="text-g-dim text-base">/{nonGMPlayers.length}</span>
               </p>
@@ -56,7 +56,7 @@ export default function AnsweringPhase({ game, session }) {
             <div className="flex flex-col gap-1.5">
               {nonGMPlayers.map(([id, p]) => (
                 <div key={id} className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${answers[id] ? 'bg-g-success/10' : 'bg-g-surface'}`}>
-                  <span className="text-g-text text-sm">{p.name}</span>
+                  <span className="text-g-text text-sm font-graffiti">{p.name}</span>
                   {answers[id] ? <span className="text-g-success font-bold">✓</span> : <span className="text-g-dim text-xs">{t('waiting_dot')}</span>}
                 </div>
               ))}
@@ -95,7 +95,7 @@ export default function AnsweringPhase({ game, session }) {
               <span className="text-g-success text-3xl">✓</span>
             </div>
             <div>
-              <p className="text-g-text font-semibold text-xl">{t('sent_title')}</p>
+              <p className="text-g-text font-display text-xl">{t('sent_title')}</p>
               <p className="text-g-muted text-sm mt-1">{t('waiting_others')}</p>
             </div>
           </div>
@@ -111,13 +111,13 @@ export default function AnsweringPhase({ game, session }) {
       <div className="flex flex-col gap-5 animate-fade-in">
         <div className="flex items-center justify-between pt-2">
           <div>
-            <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('round_label')}</p>
+            <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('round_label')}</p>
             <p className="font-display text-2xl text-g-text">{game.roundNumber}</p>
           </div>
           <Timer startedAt={round.answerTimerStart} duration={round.timerDuration ?? 30} size="lg" />
         </div>
         <div>
-          <p className="text-g-text font-semibold text-base mb-1">{t('your_answer')}</p>
+          <p className="text-g-text font-graffiti text-base mb-1">{t('your_answer')}</p>
           <p className="text-g-muted text-sm">{t('answer_sub')}</p>
         </div>
         <textarea className="input resize-none text-base leading-relaxed" style={{height:'120px'}}

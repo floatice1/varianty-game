@@ -6,7 +6,7 @@ function RoundsTab({ t, count, entries, onCountChange, onEntryChange }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
-        <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('plan_count_label')}</p>
+        <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('plan_count_label')}</p>
         <div className="flex items-center gap-4">
           {[[-1,'−'],[1,'+']].map(([d, sym]) => (
             <button key={d}
@@ -22,7 +22,7 @@ function RoundsTab({ t, count, entries, onCountChange, onEntryChange }) {
       <div className="flex flex-col gap-2.5">
         {entries.map((e, i) => (
           <div key={i} className="bg-g-surface rounded-lg px-3 pt-2.5 pb-3 flex flex-col gap-2 border-2 border-g-border">
-            <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('plan_round_n', {n: i+1})}</p>
+            <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('plan_round_n', {n: i+1})}</p>
             <input className="input py-2 text-sm" placeholder={t('plan_question_ph')}
               value={e.question || ''} maxLength={300}
               onChange={ev => onEntryChange(i, 'question', ev.target.value)} />
@@ -42,10 +42,10 @@ function RoundsTab({ t, count, entries, onCountChange, onEntryChange }) {
 function FinalTab({ t, qA, qB, onQA, onQB }) {
   const renderGroup = (label, qs, onChange) => (
     <div className="flex flex-col gap-2.5">
-      <p className="text-g-muted text-xs font-display tracking-widest uppercase">{label}</p>
+      <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{label}</p>
       {qs.map((q, i) => (
         <div key={i} className="bg-g-surface rounded-lg px-3 pt-2.5 pb-3 flex flex-col gap-2 border-2 border-g-border">
-          <p className="text-g-accent text-xs font-display tracking-widest uppercase">{t('plan_q_n', {n: i+1})}</p>
+          <p className="text-g-accent text-xs font-graffiti tracking-widest uppercase">{t('plan_q_n', {n: i+1})}</p>
           <input className="input py-2 text-sm" placeholder={t('plan_question_ph')}
             value={q.q || ''} maxLength={300}
             onChange={e => onChange(i, 'q', e.target.value)} />
@@ -63,6 +63,24 @@ function FinalTab({ t, qA, qB, onQA, onQB }) {
       {renderGroup(t('plan_pb'), qB, onQB)}
     </div>
   );
+}
+
+// ── localStorage cache for finalPrep — persists across games ──────────────
+const FINAL_PREP_CACHE_KEY = 'variants_last_final_prep';
+
+function loadCachedFinalPrep() {
+  try { return JSON.parse(localStorage.getItem(FINAL_PREP_CACHE_KEY)) || null; }
+  catch { return null; }
+}
+
+function saveCachedFinalPrep(data) {
+  try { localStorage.setItem(FINAL_PREP_CACHE_KEY, JSON.stringify(data)); }
+  catch {}
+}
+
+function finalPrepGroupHasContent(group) {
+  if (!group) return false;
+  return Object.values(group).some(q => q?.q || q?.a);
 }
 
 export default function PlanningPanel({ existingPresets, existingFinalPrep, gameCode }) {
@@ -91,18 +109,26 @@ export default function PlanningPanel({ existingPresets, existingFinalPrep, game
       wrong:    existingPresets[i]?.wrongAnswer   || '',
     }))
   );
-  const [qA, setQA] = useState(() =>
-    Array(3).fill(null).map((_, i) => ({
-      q: existingFinalPrep?.questionsA?.[i]?.q || '',
-      a: existingFinalPrep?.questionsA?.[i]?.a || '',
-    }))
-  );
-  const [qB, setQB] = useState(() =>
-    Array(3).fill(null).map((_, i) => ({
-      q: existingFinalPrep?.questionsB?.[i]?.q || '',
-      a: existingFinalPrep?.questionsB?.[i]?.a || '',
-    }))
-  );
+
+  // If Firebase has no finalPrep for this game, fall back to the last saved prep
+  const [qA, setQA] = useState(() => {
+    const srcA = finalPrepGroupHasContent(existingFinalPrep?.questionsA)
+      ? existingFinalPrep.questionsA
+      : (loadCachedFinalPrep()?.questionsA ?? null);
+    return Array(3).fill(null).map((_, i) => ({
+      q: srcA?.[i]?.q || '',
+      a: srcA?.[i]?.a || '',
+    }));
+  });
+  const [qB, setQB] = useState(() => {
+    const srcB = finalPrepGroupHasContent(existingFinalPrep?.questionsB)
+      ? existingFinalPrep.questionsB
+      : (loadCachedFinalPrep()?.questionsB ?? null);
+    return Array(3).fill(null).map((_, i) => ({
+      q: srcB?.[i]?.q || '',
+      a: srcB?.[i]?.a || '',
+    }));
+  });
 
   const entriesInitRef = useRef(false);
   const finalInitRef   = useRef(false);
@@ -144,15 +170,17 @@ export default function PlanningPanel({ existingPresets, existingFinalPrep, game
   async function handleSave() {
     setSaving(true);
     try {
+      const finalPrepData = {
+        questionsA: qA.map(q => ({ q: q.q.trim(), a: q.a.trim() })),
+        questionsB: qB.map(q => ({ q: q.q.trim(), a: q.a.trim() })),
+      };
       await Promise.all([
         savePresetRounds(gameCode, entries.map(e => ({
           question: e.question.trim(), correctAnswer: e.correct.trim(), wrongAnswer: e.wrong.trim(),
         }))),
-        saveFinalPrep(gameCode, {
-          questionsA: qA.map(q => ({ q: q.q.trim(), a: q.a.trim() })),
-          questionsB: qB.map(q => ({ q: q.q.trim(), a: q.a.trim() })),
-        }),
+        saveFinalPrep(gameCode, finalPrepData),
       ]);
+      saveCachedFinalPrep(finalPrepData);
       setExpanded(false);
     } finally { setSaving(false); }
   }
@@ -166,7 +194,7 @@ export default function PlanningPanel({ existingPresets, existingFinalPrep, game
         <div className="flex items-center gap-3 text-left">
           <span className="text-xl shrink-0">📝</span>
           <div>
-            <p className="text-g-text text-sm font-semibold">{t('plan_btn_title')}</p>
+            <p className="text-g-text text-sm font-graffiti">{t('plan_btn_title')}</p>
             <p className="text-g-dim text-xs mt-0.5">{sub}</p>
           </div>
         </div>
@@ -194,7 +222,7 @@ export default function PlanningPanel({ existingPresets, existingFinalPrep, game
       <div className="flex border-b-2 border-g-border shrink-0">
         {['rounds','final'].map(tab_ => (
           <button key={tab_}
-            className={`flex-1 py-3.5 font-display text-sm tracking-widest uppercase transition-colors border-b-2 -mb-0.5
+            className={`flex-1 py-3.5 font-graffiti text-sm tracking-widest uppercase transition-colors border-b-2 -mb-0.5
               ${tab === tab_ ? 'text-g-accent border-g-accent' : 'text-g-muted border-transparent'}`}
             onClick={() => setTab(tab_)}>
             {tab_ === 'rounds' ? t('plan_tab_rounds') : t('plan_tab_final')}

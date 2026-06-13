@@ -42,7 +42,7 @@ export default function SetupPhase({ game, session }) {
         <div className="flex flex-col gap-5 animate-fade-in h-full">
           <div className="flex items-center justify-between pt-2 pb-4 shrink-0 border-b-2 border-g-border">
             <div>
-              <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('preparing_label')}</p>
+              <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('preparing_label')}</p>
               <p className="font-display text-2xl text-g-text">{t('round_label')} {nextRoundNum}</p>
             </div>
             <p className="text-g-dim text-xs">{Object.keys(game.players || {}).length} {t('players_label').toLowerCase()}</p>
@@ -50,13 +50,13 @@ export default function SetupPhase({ game, session }) {
           <div className="card px-6 py-10 flex flex-col items-center gap-4 text-center shrink-0">
             <div className="w-10 h-10 border-2 border-g-border border-t-g-accent rounded-full animate-spin" />
             <div>
-              <p className="text-g-text font-semibold text-lg">{t('gm_preparing')}</p>
+              <p className="text-g-text font-display text-xl">{t('gm_preparing')}</p>
               <p className="text-g-muted text-sm mt-1">{t('listen_hint')}</p>
             </div>
           </div>
           {!isFirstRound && (
             <div className="flex flex-col gap-3 flex-1 min-h-0">
-              <h2 className="font-display font-bold text-g-text text-base shrink-0">{t('current_score')}</h2>
+              <h2 className="font-graffiti font-bold text-g-text text-base shrink-0">{t('current_score')}</h2>
               <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
                 <Scoreboard players={game.players} />
               </div>
@@ -75,7 +75,7 @@ export default function SetupPhase({ game, session }) {
       <div className="flex flex-col gap-5 animate-fade-in h-full">
         <div className="flex items-center justify-between pt-2 pb-4 shrink-0 border-b-2 border-g-border">
           <div>
-            <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('host_round')}</p>
+            <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('host_round')}</p>
             <p className="font-display text-2xl text-g-text">{nextRoundNum}</p>
           </div>
           <span className="badge-gm">{t('gm_badge')}</span>
@@ -84,7 +84,7 @@ export default function SetupPhase({ game, session }) {
         <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide flex flex-col gap-4">
           {currentPreset?.question && (
             <div className="card px-4 py-3 border-2 border-g-accent/50 bg-g-accent/5">
-              <p className="text-g-accent text-xs font-display tracking-wider uppercase mb-1">{t('question_label')}</p>
+              <p className="text-g-accent text-xs font-graffiti tracking-wider uppercase mb-1">{t('question_label')}</p>
               <p className="text-g-text text-base font-medium leading-relaxed">{currentPreset.question}</p>
             </div>
           )}
@@ -98,7 +98,7 @@ export default function SetupPhase({ game, session }) {
           )}
 
           <div className="flex flex-col gap-2">
-            <label className="text-g-text font-semibold text-sm flex items-center gap-2">
+            <label className="text-g-text font-graffiti text-sm flex items-center gap-2">
               <span className="w-6 h-6 rounded-lg bg-g-success/20 flex items-center justify-center text-xs">✓</span>
               {t('correct_label')}
             </label>
@@ -108,7 +108,7 @@ export default function SetupPhase({ game, session }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-g-text font-semibold text-sm flex items-center gap-2">
+            <label className="text-g-text font-graffiti text-sm flex items-center gap-2">
               <span className="w-6 h-6 rounded-lg bg-g-danger/20 flex items-center justify-center text-xs text-g-danger">✕</span>
               {t('trap_label')}
             </label>
@@ -118,12 +118,13 @@ export default function SetupPhase({ game, session }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-g-text font-semibold text-sm">{t('timer_label')}</label>
+            <label className="text-g-text font-graffiti text-sm">{t('timer_label')}</label>
             <div className="flex gap-3">
               {[20, 30].map(s => (
                 <button key={s}
-                  className={`flex-1 h-12 rounded-2xl font-display font-bold text-xl transition-all duration-150 active:scale-95
-                    ${timerDuration === s ? 'bg-g-accent text-black shadow-glow-sm' : 'bg-g-card border-2 border-g-border text-g-muted hover:border-g-accent/40'}`}
+                  className={`flex-1 h-12 rounded-lg font-display font-bold text-xl transition-all duration-150
+                    active:translate-x-px active:translate-y-px
+                    ${timerDuration === s ? 'bg-g-accent text-black shadow-hard-accent' : 'bg-g-card border-2 border-g-border text-g-muted hover:border-g-accent/40'}`}
                   onClick={() => setTimerDuration(s)}>{s}s</button>
               ))}
             </div>
@@ -131,7 +132,7 @@ export default function SetupPhase({ game, session }) {
 
           {!isFirstRound && (
             <div className="flex flex-col gap-2">
-              <p className="text-g-dim text-xs font-display tracking-widest uppercase">{t('round_score')}</p>
+              <p className="text-g-dim text-xs font-graffiti tracking-widest uppercase">{t('round_score')}</p>
               <Scoreboard players={game.players} compact />
             </div>
           )}

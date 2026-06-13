@@ -42,14 +42,14 @@ export default function VotingPhase({ game, session }) {
         <div className="flex flex-col gap-5 animate-fade-in">
           <div className="flex items-center justify-between pt-2">
             <div>
-              <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('voting_label')}</p>
+              <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('voting_label')}</p>
               <p className="font-display text-2xl text-g-text">{game.roundNumber}</p>
             </div>
             <Timer startedAt={round.voteTimerStart} duration={20} size="lg" />
           </div>
           <div className="card px-4 py-4">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-g-text font-semibold">{t('votes_label')}</p>
+              <p className="text-g-text font-graffiti">{t('votes_label')}</p>
               <p className="font-display font-bold text-g-accent text-xl tabular-nums">
                 {votedCount}<span className="text-g-dim text-base">/{nonGMPlayers.length}</span>
               </p>
@@ -61,7 +61,7 @@ export default function VotingPhase({ game, session }) {
             <div className="flex flex-col gap-1.5">
               {nonGMPlayers.map(([id, p]) => (
                 <div key={id} className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${getVoteId(votes[id], game.roundNumber) ? 'bg-g-accent/10' : 'bg-g-surface'}`}>
-                  <span className="text-g-text text-sm">{p.name}</span>
+                  <span className="text-g-text text-sm font-graffiti">{p.name}</span>
                   {getVoteId(votes[id], game.roundNumber) ? <span className="text-g-accent font-bold">✓</span> : <span className="text-g-dim text-xs">{t('voting_dot')}</span>}
                 </div>
               ))}
@@ -81,7 +81,7 @@ export default function VotingPhase({ game, session }) {
       <div className="flex flex-col gap-4 animate-fade-in">
         <div className="flex items-center justify-between pt-2">
           <div>
-            <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('voting_label')}</p>
+            <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('voting_label')}</p>
             <p className="font-display text-2xl text-g-text">{game.roundNumber}</p>
           </div>
           <Timer startedAt={round.voteTimerStart} duration={20} size="lg" />
@@ -101,9 +101,9 @@ export default function VotingPhase({ game, session }) {
               <div key={option.id} className={`${cardClass} ${blocked ? 'pointer-events-none' : ''}`}
                 onClick={() => handleVote(option.id)}>
                 <p className="text-g-text text-base leading-relaxed">{option.text}</p>
-                {isOwn && <p className="text-g-dim text-xs mt-2 font-medium">{t('own_ans')}</p>}
+                {isOwn && <p className="text-g-dim text-xs mt-2 font-graffiti tracking-wider">{t('own_ans')}</p>}
                 {isSelected && !isOwn && (
-                  <p className="text-g-accent text-xs mt-2 font-semibold">
+                  <p className="text-g-accent text-xs mt-2 font-graffiti tracking-wider">
                     {expired ? t('selected') : t('selected_cancel')}
                   </p>
                 )}
@@ -113,7 +113,7 @@ export default function VotingPhase({ game, session }) {
         </div>
 
         {!expired && myVote && <p className="text-g-dim text-xs text-center pb-2">{t('change_hint')}</p>}
-        {expired && !myVote && <p className="text-g-danger text-xs text-center pb-2 font-display tracking-wider uppercase">{t('no_vote')}</p>}
+        {expired && !myVote && <p className="text-g-danger text-xs text-center pb-2 font-graffiti tracking-wider uppercase">{t('no_vote')}</p>}
       </div>
     </div>
   );

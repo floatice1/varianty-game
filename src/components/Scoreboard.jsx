@@ -14,12 +14,12 @@ export default function Scoreboard({ players, changes = {}, compact = false }) {
           <div key={id}
             className={`flex items-center justify-between rounded-lg border-2 border-g-border bg-g-card transition-colors ${compact ? 'px-3 py-2' : 'px-4 py-3'}`}>
             <div className="flex items-center gap-2 min-w-0">
-              <span className={`text-g-text ${compact ? 'text-sm' : 'text-base'} font-medium truncate`}>{p.name}</span>
+              <span className={`text-g-text font-graffiti ${compact ? 'text-sm' : 'text-base'} truncate`}>{p.name}</span>
               {p.isGM && <span className="badge-gm">{t('gm_badge')}</span>}
             </div>
             <div className="flex items-center gap-2 shrink-0">
               {delta !== undefined && delta !== 0 && (
-                <span className={`text-xs font-display font-bold tabular-nums ${delta > 0 ? 'text-g-success' : 'text-g-danger'}`}>
+                <span className={`text-xs font-graffiti font-bold tabular-nums ${delta > 0 ? 'text-g-success' : 'text-g-danger'}`}>
                   {delta > 0 ? `+${delta}` : delta}
                 </span>
               )}

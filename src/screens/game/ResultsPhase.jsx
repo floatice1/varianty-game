@@ -12,7 +12,7 @@ export default function ResultsPhase({ game, session }) {
 
   const header = (
     <div className="pt-2">
-      <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('results_label')}</p>
+      <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('results_label')}</p>
       <p className="font-display text-3xl text-g-text">{game.roundNumber}</p>
     </div>
   );
@@ -24,12 +24,12 @@ export default function ResultsPhase({ game, session }) {
         <div className="flex flex-col gap-5 animate-fade-in h-full">
           <div className="shrink-0 border-b-2 border-g-border pb-4">{header}</div>
           <div className="flex flex-col gap-2 flex-1 min-h-0">
-            <p className="font-display text-sm tracking-widest uppercase text-g-muted shrink-0">{t('score_label')}</p>
+            <p className="font-graffiti text-sm tracking-widest uppercase text-g-muted shrink-0">{t('score_label')}</p>
             <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
               <Scoreboard players={players} changes={changes} />
             </div>
           </div>
-          <p className="text-g-dim text-xs text-center border-t-2 border-g-border pt-4 shrink-0">{t('waiting_host')}</p>
+          <p className="text-g-dim text-xs text-center border-t-2 border-g-border pt-4 shrink-0 font-graffiti tracking-wider">{t('waiting_host')}</p>
         </div>
       </div>
     );
@@ -42,7 +42,7 @@ export default function ResultsPhase({ game, session }) {
         <div className="shrink-0 border-b-2 border-g-border pb-4">{header}</div>
 
         <div className="flex flex-col gap-2 flex-1 min-h-0">
-          <p className="font-display text-sm tracking-widest uppercase text-g-muted shrink-0">{t('score_label')}</p>
+          <p className="font-graffiti text-sm tracking-widest uppercase text-g-muted shrink-0">{t('score_label')}</p>
           <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
             <Scoreboard players={players} changes={changes} />
           </div>
@@ -51,7 +51,7 @@ export default function ResultsPhase({ game, session }) {
         <div className="shrink-0 border-t-2 border-g-border pt-4">
           {confirmEnd ? (
             <div className="flex flex-col gap-3">
-              <p className="text-g-text font-semibold text-center">{t('confirm_end')}</p>
+              <p className="text-g-text font-graffiti text-center">{t('confirm_end')}</p>
               <button className="btn-danger h-14" onClick={() => endGame(session.gameCode)}>{t('end_game')}</button>
               <button className="btn-ghost h-12" onClick={() => setConfirmEnd(false)}>{t('confirm_back')}</button>
             </div>

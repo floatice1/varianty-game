@@ -15,8 +15,8 @@
   --g-danger:  255 45 58;
   --g-pink:    255 51 102;
   --g-text:    240 240 230;
-  --g-muted:   136 136 112;
-  --g-dim:     68 68 58;
+  --g-muted:   225 225 215;
+  --g-dim:     190 190 175;
 }
 
 .light {
@@ -30,8 +30,8 @@
   --g-danger:  208 24 40;
   --g-pink:    192 20 60;
   --g-text:    10 10 8;
-  --g-muted:   90 88 78;
-  --g-dim:     140 138 126;
+  --g-muted:   15 14 12;
+  --g-dim:     42 40 35;
 }
 
 @layer base {
@@ -64,7 +64,7 @@
 @layer components {
   /* ── Buttons ──────────────────────────────────────────── */
   .btn {
-    @apply w-full font-display tracking-widest text-sm uppercase
+    @apply w-full font-graffiti tracking-widest text-sm uppercase
            rounded-lg px-5 transition-all duration-100
            disabled:opacity-35 disabled:pointer-events-none
            focus:outline-none inline-flex items-center justify-center;
@@ -125,7 +125,8 @@
 }
 
 @layer utilities {
-  .font-display { font-family: 'Russo One', system-ui, sans-serif; }
+  .font-display  { font-family: 'Rubik Spray Paint', system-ui, sans-serif; }
+  .font-graffiti { font-family: 'Rubik Dirt', system-ui, sans-serif; }
   .text-balance { text-wrap: balance; }
   .scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
   .scrollbar-hide::-webkit-scrollbar { display: none; }

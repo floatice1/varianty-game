@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { saveFinalPlayers, saveFinalPrep, endFinalRound, backToResults } from '../../gameActions';
+import { saveFinalPlayers, saveFinalRoundQuestions, endFinalRound, backToResults } from '../../gameActions';
 import { arrayFromFirebase, shuffle } from '../../utils';
 import { useT } from '../../i18n';
 
@@ -16,7 +16,7 @@ function Countdown({ start }) {
     return () => clearInterval(id);
   }, [start]);
   const pct = (left / 30) * 100;
-  const color = left === 0 ? '#ff2d3a' : left <= 5 ? '#ff2d3a' : left <= 10 ? 'rgb(var(--g-accent))' : 'rgb(var(--g-text))';
+  const color = left <= 5 ? 'rgb(var(--g-danger))' : left <= 10 ? 'rgb(var(--g-accent))' : 'rgb(var(--g-text))';
   const r = 26, c = 2 * Math.PI * r;
   return (
     <div className="relative w-16 h-16 flex items-center justify-center shrink-0">
@@ -63,7 +63,7 @@ function AnsweringStep({ t, label, qIdx, accent, timer, opts, setOpts, onAdvance
       <div className="flex flex-col gap-5 animate-fade-in h-full">
         <div className="flex items-center justify-between pt-2 pb-4 shrink-0 border-b-2 border-g-border">
           <div>
-            <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('fin_q_label',{name:label})}</p>
+            <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('fin_q_label',{name:label})}</p>
             <p className="font-display text-3xl text-g-text">{qIdx+1} / {TOTAL_Q}</p>
           </div>
           <Countdown start={timer} />
@@ -72,19 +72,19 @@ function AnsweringStep({ t, label, qIdx, accent, timer, opts, setOpts, onAdvance
         <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide flex flex-col gap-4">
           {questionText && (
             <div className={`card px-4 py-3 border-2 ${accent}`}>
-              <p className="text-g-muted text-xs font-display tracking-wider uppercase mb-1">{t('question_label')}</p>
+              <p className="text-g-muted text-xs font-graffiti tracking-wider uppercase mb-1">{t('question_label')}</p>
               <p className="text-g-text text-base font-medium leading-relaxed">{questionText}</p>
             </div>
           )}
           {correctAns && (
             <div className="card px-3 py-2.5 border-2 border-g-success/50 bg-g-success/5">
-              <p className="text-g-success text-xs font-display tracking-wider uppercase mb-0.5">{t('fin_correct_ref')}</p>
+              <p className="text-g-success text-xs font-graffiti tracking-wider uppercase mb-0.5">{t('fin_correct_ref')}</p>
               <p className="text-g-text text-sm font-medium">{correctAns}</p>
             </div>
           )}
           {!questionText && (
             <div className={`card px-4 py-3 border-2 ${accent}`}>
-              <p className="text-g-muted text-xs font-display tracking-wider uppercase">{t('plan_q_n',{n:qIdx+1})}</p>
+              <p className="text-g-muted text-xs font-graffiti tracking-wider uppercase">{t('plan_q_n',{n:qIdx+1})}</p>
               <p className="text-g-dim text-xs mt-0.5">{t('fin_q_hint')}</p>
             </div>
           )}
@@ -99,7 +99,7 @@ function AnsweringStep({ t, label, qIdx, accent, timer, opts, setOpts, onAdvance
                   maxLength={200}
                 />
                 {dups[i] && (
-                  <p className="text-g-danger text-xs mt-1 font-display tracking-wider uppercase">
+                  <p className="text-g-danger text-xs mt-1 font-graffiti tracking-wider uppercase">
                     {t('fin_dup_error')}
                   </p>
                 )}
@@ -135,7 +135,7 @@ function GuessingStep({ t, label, qIdx, correctAns, questionText, playerOpts, gu
     <div className="page overflow-hidden" style={{ height: '100dvh' }}>
       <div className="flex flex-col gap-5 animate-fade-in h-full">
         <div className="pt-2 pb-4 shrink-0 border-b-2 border-g-border">
-          <p className="text-g-muted text-xs font-display tracking-widest uppercase">{label} · {t('plan_q_n',{n:qIdx+1})}</p>
+          <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{label} · {t('plan_q_n',{n:qIdx+1})}</p>
           <p className="font-display text-3xl text-g-text">{qIdx+1} / {TOTAL_Q}</p>
         </div>
 
@@ -145,7 +145,7 @@ function GuessingStep({ t, label, qIdx, correctAns, questionText, playerOpts, gu
               <p className="text-g-text text-base font-medium leading-relaxed">{questionText}</p>
             </div>
           )}
-          <p className="text-g-muted text-xs font-display tracking-widest uppercase shrink-0">
+          <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase shrink-0">
             {t('fin_which',{name:label.split(' ')[0]})}
           </p>
           {allOpts.map((opt,i) => {
@@ -160,9 +160,9 @@ function GuessingStep({ t, label, qIdx, correctAns, questionText, playerOpts, gu
                                           'border-g-border bg-g-card hover:border-g-accent/40'}`}
                 onClick={()=>pick(i)}>
                 <p className="text-g-text text-sm font-medium">{opt||'—'}</p>
-                {isCorrect&&!isChosen && <p className="text-g-success/70 text-xs mt-0.5 font-display tracking-wider uppercase">{t('fin_correct_mark')}</p>}
-                {isChosen&&isCorrect  && <p className="text-g-success text-xs mt-0.5 font-display tracking-wider uppercase">{t('fin_plus5')} {t('fin_cancel')}</p>}
-                {isChosen&&!isCorrect && <p className="text-g-danger  text-xs mt-0.5 font-display tracking-wider uppercase">{t('fin_zero')} {t('fin_cancel')}</p>}
+                {isCorrect&&!isChosen && <p className="text-g-success/70 text-xs mt-0.5 font-graffiti tracking-wider uppercase">{t('fin_correct_mark')}</p>}
+                {isChosen&&isCorrect  && <p className="text-g-success text-xs mt-0.5 font-graffiti tracking-wider uppercase">{t('fin_plus5')} {t('fin_cancel')}</p>}
+                {isChosen&&!isCorrect && <p className="text-g-danger  text-xs mt-0.5 font-graffiti tracking-wider uppercase">{t('fin_zero')} {t('fin_cancel')}</p>}
               </button>
             );
           })}
@@ -185,8 +185,16 @@ export default function FinalRound({ game, session }) {
   const finalPrep = game.finalPrep || {};
   const fr        = game.finalRound || {};
 
-  const questionsA = arrayFromFirebase(finalPrep.questionsA).slice(0, TOTAL_Q);
-  const questionsB = arrayFromFirebase(finalPrep.questionsB).slice(0, TOTAL_Q);
+  // Use confirmed questions from the active round (finalRound.questionsA/B written by confirmSetup).
+  // If none yet (first time entering setup), fall back to PlanningPanel's pre-planned questions.
+  const confirmedA = arrayFromFirebase(fr.questionsA);
+  const confirmedB = arrayFromFirebase(fr.questionsB);
+  const questionsA = confirmedA.some(q => q?.a)
+    ? confirmedA.slice(0, TOTAL_Q)
+    : arrayFromFirebase(finalPrep.questionsA).slice(0, TOTAL_Q);
+  const questionsB = confirmedB.some(q => q?.a)
+    ? confirmedB.slice(0, TOTAL_Q)
+    : arrayFromFirebase(finalPrep.questionsB).slice(0, TOTAL_Q);
 
   const topPlayers = Object.entries(players)
     .filter(([,p]) => !p.isGM)
@@ -239,11 +247,13 @@ export default function FinalRound({ game, session }) {
   const canStart = p1Id && p2Id && p1Id!==p2Id && allAnswersFilled;
 
   async function confirmSetup() {
-    // Always save to Firebase (fills in inline entries)
-    await saveFinalPrep(session.gameCode, {
-      questionsA: localQA.map(q=>({q:q.q.trim(),a:q.a.trim()})),
-      questionsB: localQB.map(q=>({q:q.q.trim(),a:q.a.trim()})),
-    });
+    // Save confirmed questions to finalRound (separate from PlanningPanel's finalPrep)
+    // so that starting a new final round always begins with a clean slate.
+    await saveFinalRoundQuestions(
+      session.gameCode,
+      localQA.map(q=>({q:q.q.trim(),a:q.a.trim()})),
+      localQB.map(q=>({q:q.q.trim(),a:q.a.trim()})),
+    );
     await saveFinalPlayers(session.gameCode, p1Id, p2Id);
     setPhase('exit_b');
   }
@@ -279,12 +289,12 @@ export default function FinalRound({ game, session }) {
   if (phase === 'setup') {
     const renderAnswers = (label, qs, setQs, accent) => (
       <div className="flex flex-col gap-2">
-        <p className={`text-xs font-display tracking-wider uppercase ${accent}`}>{label}</p>
+        <p className={`text-xs font-graffiti tracking-wider uppercase ${accent}`}>{label}</p>
         {qs.map((q,i) => {
           const missing = showErrors && !q.a.trim();
           return (
             <div key={i} className="bg-g-surface rounded-lg border-2 border-g-border px-3 pt-2.5 pb-3 flex flex-col gap-2">
-              <p className="text-g-dim text-xs font-display tracking-wider uppercase">{t('plan_q_n',{n:i+1})}</p>
+              <p className="text-g-dim text-xs font-graffiti tracking-wider uppercase">{t('plan_q_n',{n:i+1})}</p>
               <input className="input py-2 text-sm" placeholder={t('plan_question_ph')}
                 value={q.q} maxLength={300}
                 onChange={e=>setQs(p=>p.map((r,j)=>j===i?{...r,q:e.target.value}:r))}/>
@@ -301,7 +311,7 @@ export default function FinalRound({ game, session }) {
                   value={q.a} maxLength={200}
                   onChange={e=>setQs(p=>p.map((r,j)=>j===i?{...r,a:e.target.value}:r))}/>
                 {missing && (
-                  <p className="text-g-danger text-xs mt-1 font-display tracking-wider uppercase">
+                  <p className="text-g-danger text-xs mt-1 font-graffiti tracking-wider uppercase">
                     ⚠ {t('fin_ans_required')}
                   </p>
                 )}
@@ -317,7 +327,7 @@ export default function FinalRound({ game, session }) {
 
         {/* Sticky header */}
         <div className="shrink-0 px-4 pt-6 pb-4 border-b-2 border-g-border">
-          <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('final_gm_label')}</p>
+          <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('final_gm_label')}</p>
           <p className="font-display text-3xl text-g-text tracking-wider">{t('final_round_title')}</p>
         </div>
 
@@ -331,11 +341,11 @@ export default function FinalRound({ game, session }) {
               [p2Id,setP2Id,p1Id,setP1Id,t('fin_pb'),'text-g-pink',  'border-g-pink',  'bg-g-pink/10'],
             ].map(([selId,setSel,otherId,setOther,lbl,tc,bc,bg]) => (
               <div key={lbl} className={`card px-4 py-3 border-2 ${bc}/40`}>
-                <p className={`text-xs font-display tracking-wider uppercase mb-2 ${tc}`}>{lbl}</p>
+                <p className={`text-xs font-graffiti tracking-wider uppercase mb-2 ${tc}`}>{lbl}</p>
                 <div className="flex flex-col gap-1.5">
                   {topPlayers.map(([id,p]) => (
                     <button key={id}
-                      className={`px-3 py-2 rounded-lg border-2 text-left text-sm font-semibold transition-all
+                      className={`px-3 py-2 rounded-lg border-2 text-left text-sm font-graffiti transition-all
                         ${selId===id?`${bc} ${bg} text-g-text`:'border-g-border text-g-muted'}`}
                       onClick={()=>{setSel(id);if(otherId===id)setOther(topPlayers.find(([tid])=>tid!==id)?.[0]??'');}}>
                       {p.name} — {p.score}
@@ -355,7 +365,7 @@ export default function FinalRound({ game, session }) {
         {/* Sticky footer */}
         <div className="shrink-0 px-4 py-4 border-t-2 border-g-border bg-g-bg flex flex-col gap-3">
           {showErrors && !allAnswersFilled && (
-            <p className="text-g-danger text-xs font-display tracking-wider uppercase text-center">
+            <p className="text-g-danger text-xs font-graffiti tracking-wider uppercase text-center">
               {t('fin_fill_answers')}
             </p>
           )}
@@ -420,17 +430,17 @@ export default function FinalRound({ game, session }) {
 
     const renderGroup=(name,questions,playerOpts,guesses,scores)=>(
       <div className="flex flex-col gap-2">
-        <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('fin_guessed',{name})}</p>
+        <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('fin_guessed',{name})}</p>
         {questions.map((q,i)=>{
           const allOpts=[...playerOpts[i],q?.a??''];
           return (
             <div key={i} className={`card px-3 py-3 border-2 ${scores[i]===5?'border-g-success bg-g-success/8':'border-g-border'}`}>
               {q?.q && <p className="text-g-text text-sm font-medium mb-1.5">{q.q}</p>}
-              <p className="text-g-dim text-xs font-display tracking-wider uppercase mb-0.5">{t('plan_q_n',{n:i+1})}</p>
+              <p className="text-g-dim text-xs font-graffiti tracking-wider uppercase mb-0.5">{t('plan_q_n',{n:i+1})}</p>
               <p className="text-g-muted text-xs">{t('fin_options',{opts:allOpts.filter(Boolean).join(' · ')||'—'})}</p>
               <p className="text-g-muted text-xs mt-0.5">{t('fin_correct_was')} <span className="text-g-success font-medium">{q?.a||'—'}</span></p>
               {guesses[i]!==null&&(
-                <p className={`text-xs font-display tracking-wider uppercase mt-1.5 ${scores[i]===5?'text-g-success':'text-g-muted'}`}>
+                <p className={`text-xs font-graffiti tracking-wider uppercase mt-1.5 ${scores[i]===5?'text-g-success':'text-g-muted'}`}>
                   {t('fin_named',{opt:allOpts[guesses[i]]||'?'})} {scores[i]===5?t('fin_plus5'):t('fin_zero')}
                 </p>
               )}
@@ -443,7 +453,7 @@ export default function FinalRound({ game, session }) {
     return (
       <div className="flex flex-col bg-g-bg animate-fade-in" style={{height:'100dvh',maxWidth:'448px',margin:'0 auto'}}>
         <div className="shrink-0 px-4 pt-6 pb-4 border-b-2 border-g-border">
-          <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('fin_summary_title')}</p>
+          <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('fin_summary_title')}</p>
           <p className="font-display text-3xl text-g-text tracking-wider">{t('final_round_title')}</p>
         </div>
         <div className="flex-1 overflow-y-auto px-4 py-4 scrollbar-hide">
@@ -451,10 +461,10 @@ export default function FinalRound({ game, session }) {
             {renderGroup(p1Name,localQB,bOpts,aGuesses,aScore)}
             {renderGroup(p2Name,localQA,aOpts,bGuesses,bScore)}
             <div className="card px-4 py-4 border-2 border-g-border">
-              <p className="text-g-muted text-xs font-display tracking-widest uppercase mb-3">{t('fin_final_score')}</p>
+              <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase mb-3">{t('fin_final_score')}</p>
               {[[p1Id,p1Name,p1B,p1E],[p2Id,p2Name,p2B,p2E]].map(([id,name,base,earned])=>(
                 <div key={id} className="flex items-center justify-between py-1">
-                  <span className="text-g-text font-semibold">{name}</span>
+                  <span className="text-g-text font-graffiti">{name}</span>
                   <span className="font-display text-lg tabular-nums">
                     <span className="text-g-muted">{base}</span>
                     {earned>0&&<span className="text-g-success"> +{earned}</span>}

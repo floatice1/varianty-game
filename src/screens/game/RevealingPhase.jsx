@@ -43,7 +43,7 @@ export default function RevealingPhase({ game, session }) {
     <div className="flex flex-col bg-g-bg" style={{height:'100dvh', maxWidth:'448px', margin:'0 auto'}}>
       <div className="shrink-0 flex items-center justify-between px-4 pt-6 pb-4 border-b-2 border-g-border">
         <div>
-          <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('preview_label')}</p>
+          <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('preview_label')}</p>
           <p className="font-display text-3xl text-g-text">{game.roundNumber}</p>
         </div>
         <span className="badge-gm">{t('host_only')}</span>
@@ -52,11 +52,11 @@ export default function RevealingPhase({ game, session }) {
       <div className="flex-1 overflow-y-auto px-4 py-4 scrollbar-hide">
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <p className="font-display text-sm tracking-widest uppercase text-g-muted">{t('score_label')}</p>
+            <p className="font-graffiti text-sm tracking-widest uppercase text-g-muted">{t('score_label')}</p>
             <Scoreboard players={players} changes={changes} />
           </div>
           <div className="flex flex-col gap-2">
-            <p className="font-display text-sm tracking-widest uppercase text-g-muted">{t('reveal_options') || t('options_label').split(' ·')[0]}</p>
+            <p className="font-graffiti text-sm tracking-widest uppercase text-g-muted">{t('reveal_options') || t('options_label').split(' ·')[0]}</p>
             <div className="flex flex-col gap-3">
               {options.map(option => {
                 const s      = getOptionStyle(option);
@@ -64,23 +64,30 @@ export default function RevealingPhase({ game, session }) {
                 return (
                   <div key={option.id} className={`rounded-lg border-2 px-4 py-4 ${s.border} ${s.bg}`}>
                     <p className="text-g-text text-base font-medium leading-relaxed">{option.text}</p>
-                    <p className={`text-xs font-bold uppercase tracking-wider mt-2 ${s.labelClass}`}>{s.label}</p>
+                    {option.id === 'gm_correct' || option.id === 'gm_wrong' ? (
+                      <p className={`text-xs font-graffiti uppercase tracking-wider mt-2 ${s.labelClass}`}>{s.label}</p>
+                    ) : (
+                      <p className="text-g-muted text-xs mt-2 flex items-center gap-1">
+                        <span>👤</span>
+                        <span className="font-graffiti text-g-text">{players[option.id]?.name ?? '?'}</span>
+                      </p>
+                    )}
                     <div className="mt-3">
                       {voters.length > 0 ? (
                         <>
-                          <p className="text-g-muted text-xs font-display tracking-wider uppercase mb-1.5">
+                          <p className="text-g-muted text-xs font-graffiti tracking-wider uppercase mb-1.5">
                             {t('chosen_n', {n: voters.length})}
                           </p>
                           <div className="flex flex-wrap gap-1.5">
                             {voters.map(id => (
-                              <span key={id} className={`px-2.5 py-1 rounded-sm text-sm font-bold uppercase tracking-wide ${s.voterBadge}`}>
+                              <span key={id} className={`px-2.5 py-1 rounded-sm text-sm font-graffiti uppercase tracking-wide ${s.voterBadge}`}>
                                 {players[id]?.name ?? '?'}
                               </span>
                             ))}
                           </div>
                         </>
                       ) : (
-                        <p className="text-g-dim text-xs font-display tracking-wider uppercase">{t('none_chosen')}</p>
+                        <p className="text-g-dim text-xs font-graffiti tracking-wider uppercase">{t('none_chosen')}</p>
                       )}
                     </div>
                   </div>

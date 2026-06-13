@@ -34,6 +34,11 @@ export default function App() {
         // Show notification only if game ended unexpectedly (not after normal game over)
         if (!session?.isGM && lastPhaseRef.current !== 'ended') setKickNotice(true);
         clearSession();
+      } else if (!session.isGM && session.playerId && !data.players?.[session.playerId]) {
+        // Session is stale — player's ID is no longer in the game.
+        // Drop the session so the player can rejoin via HomeScreen (name + code).
+        setSession(null); setGameData(null); setConnecting(false);
+        localStorage.removeItem('variants_session');
       } else {
         lastPhaseRef.current = data.phase;
         setGameData(data);

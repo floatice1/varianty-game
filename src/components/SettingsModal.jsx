@@ -19,7 +19,7 @@ export default function SettingsModal({ settings, onChange, onClose }) {
 
         {/* Language */}
         <div className="flex flex-col gap-2 mb-5">
-          <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('lang_label')}</p>
+          <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('lang_label')}</p>
           <div className="flex gap-2">
             {[['uk','🇺🇦 Укр'],['en','🇬🇧 Eng'],['pl','🇵🇱 Pol']].map(([code, label]) => (
               <button key={code}
@@ -35,7 +35,7 @@ export default function SettingsModal({ settings, onChange, onClose }) {
 
         {/* Theme */}
         <div className="flex flex-col gap-2">
-          <p className="text-g-muted text-xs font-display tracking-widest uppercase">{t('theme_label')}</p>
+          <p className="text-g-muted text-xs font-graffiti tracking-widest uppercase">{t('theme_label')}</p>
           <div className="flex gap-2">
             {[['dark','🌙'],['light','☀️']].map(([mode, icon]) => (
               <button key={mode}

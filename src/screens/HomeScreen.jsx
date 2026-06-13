@@ -58,7 +58,7 @@ export default function HomeScreen({ onJoin, settings, onSettingsChange, kickNot
           </div>
 
           <div>
-            <label className="text-g-muted text-xs font-display tracking-wider uppercase block mb-1.5">
+            <label className="text-g-muted text-xs font-graffiti tracking-wider uppercase block mb-1.5">
               {t('home_your_name')}
             </label>
             <input className="input" placeholder={t('home_name_ph')} value={name}
@@ -67,7 +67,7 @@ export default function HomeScreen({ onJoin, settings, onSettingsChange, kickNot
           </div>
 
           <div>
-            <label className="text-g-muted text-xs font-display tracking-wider uppercase block mb-1.5">
+            <label className="text-g-muted text-xs font-graffiti tracking-wider uppercase block mb-1.5">
               {t('home_code_label')}
             </label>
             <input className="input text-center text-2xl font-display font-bold tracking-[0.3em] uppercase"

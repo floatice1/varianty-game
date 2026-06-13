@@ -4,8 +4,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['"Russo One"', 'system-ui', 'sans-serif'],
-        sans:    ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+        display:  ['"Rubik Spray Paint"', 'system-ui', 'sans-serif'],
+        graffiti: ['"Rubik Dirt"', 'system-ui', 'sans-serif'],
+        sans:     ['"Space Grotesk"', 'system-ui', 'sans-serif'],
       },
       colors: {
         g: {
