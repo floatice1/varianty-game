@@ -18,7 +18,9 @@ export default function RevealingPhase({ game, session }) {
   const changes = round.scoreChanges || {};
 
   const votesByOption = {};
-  Object.entries(votes).forEach(([vid, cid]) => {
+  Object.entries(votes).forEach(([vid, v]) => {
+    const cid = (v && typeof v === 'object') ? v.o : v;
+    if (!cid) return;
     if (!votesByOption[cid]) votesByOption[cid] = [];
     votesByOption[cid].push(vid);
   });
